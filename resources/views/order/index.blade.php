@@ -1,8 +1,10 @@
 <x-app-layout>
     @push('css')
         <link href="{{asset('assets/css/v2/order.min.css')}}" rel="stylesheet"/>
-
-        <style id="highlighting_style">a, .hl, .hoverhl:hover, .linkhl a:hover {
+    @endpush
+    @section('highlighting_style')
+        <style id="highlighting_style">
+            a, .hl, .hoverhl:hover, .linkhl a:hover {
                 color: #f7931a;
             }
 
@@ -16,24 +18,25 @@
 
             .bghl, .buttonhl button:hover {
                 background-color: #f7931a;
-            }</style>
-    @endpush
+            }
+        </style>
+    @endsection
     @includeWhen(!auth()->check(),'includes.auth')
     <main>
         <section id="index_main" class="main-section withheader darkbg">
-
             @include('includes.header')
             <div class="wrapper">
                 <section class="order-outer">
                     <div class="order-body">
                         <section class="order-direction clrfix">
                             <div class="dir-from">
-                                <div class="dir-cont" data-value="USDT">
-                                    <div class="coin-ico svgcoin usdt"></div>
-                                    <div class="coin-head">Вы отправляете</div>
-                                    <div class="coin-value" id="order_send_value">50.000 USDT<sup>ETH</sup></div>
-                                    <div class="coin-address" title="0xa107443c3dc6d4e52707cecb631962b959b44ed5">
-                                        0xa107443c3dc6d4e52707cecb631962b959b44ed5
+                                <div class="dir-cont" data-value="{{$order->fromCcy}}">
+                                    <div class="coin-ico svgcoin {{strtolower($order->fromCcy)}}"></div>
+                                    <div class="coin-head">{{__('You send')}}</div>
+                                    <div class="coin-value"
+                                         id="order_send_value">{{$order->fromQty}} {{$order->fromCcy}}</div>
+                                    <div class="coin-address" title="{{$order->fromAddress}}">
+                                        {{$order->fromAddress}}
                                     </div>
                                 </div>
                             </div>
@@ -41,43 +44,43 @@
                                 <div class="ico arrow"></div>
                             </div>
                             <div class="dir-to">
-                                <div class="dir-cont" data-value="BTC">
-                                    <div class="coin-ico svgcoin btc"></div>
-                                    <div class="coin-head">Вы получаете</div>
-                                    <div class="coin-value" id="order_receive_value">0.00023477 BTC</div>
+                                <div class="dir-cont" data-value="{{$order->toCcy}}">
+                                    <div class="coin-ico svgcoin {{strtolower($order->toCcy)}}"></div>
+                                    <div class="coin-head">{{__('You receive')}}</div>
+                                    <div class="coin-value"
+                                         id="order_receive_value">{{$order->toQty}} {{$order->toCcy}}</div>
                                     <div class="coin-address"
-                                         title="bc1pfd0ykr7nv8rm6dsm5s6mlfyku2ahnxsg02jcgrtwq4awawlsjzmseulamn">
-                                        bc1pfd0ykr7nv8rm6d…q4awawlsjzmseulamn
+                                         title="{{$order->toAddress}}">
+                                        {{$order->toAddress}}
                                     </div>
                                 </div>
                             </div>
                         </section>
                         <div class="order-wrap-shadow">
-                            <section class="order-action expired" id="order_action">
+                            <section class="order-action new" id="order_action">
                                 <div class="order-action-body buttonhl">
                                     <div class="order-qr-wrap" id="order_qr">
                                         <div class="order-qr">
                                             @if($order->qrAddress)
                                                 <input type="radio" id="qr_type0" name="qr_switcher" checked="">
                                                 <div class="order-qrcode" href="#"><img
-                                                            src="{{$order->qrAddress}}"
-                                                            alt=""></div>
+                                                        src="{{$order->qrAddress}}"
+                                                        alt=""></div>
                                             @endif
                                             @if($order->qrSum)
                                                 <input @checked(!$order->qrAddress) type="radio" id="qr_type1"
                                                        name="qr_switcher">
                                                 <div class="order-qrcode" href="#"><img
-                                                            src="{{$order->qrSum}}"
-                                                            alt=""></div>
+                                                        src="{{$order->qrSum}}"
+                                                        alt=""></div>
                                             @endif
-
                                             <div class="qr-switcher"
                                                  data-count="{{count(array_filter([$order->qrAddress,$order->qrSum]))}}">
                                                 @if($order->qrAddress)
-                                                    <label for="qr_type0"><span>Адрес</span></label>
+                                                    <label for="qr_type0"><span>{{__('Address')}}</span></label>
                                                 @endif
                                                 @if($order->qrSum)
-                                                    <label for="qr_type1"><span>С суммой</span></label>
+                                                    <label for="qr_type1"><span>{{__('With amount')}}</span></label>
                                                 @endif
                                             </div>
                                         </div>
@@ -85,148 +88,182 @@
                                     <section class="order-head-info" id="order_info">
                                         <div class="order-head-info-inner" id="order_info_inner">
                                             <div class="order-id-wrap">
-                                                <label>Номер заказа</label>
-                                                <div><span class="pseudo-hint-blue" data-copy="UPTYUU"
-                                                           data-hint="Скопировано"><span
-                                                                class="order-id hl">{{$order->num}}</span><i
-                                                                class="ico copy"></i></span></div>
+                                                <label>{{__('Order ID')}}</label>
+                                                <div><span class="pseudo-hint-blue" data-copy="{{$order->num}}"
+                                                           data-hint="Copied"><span
+                                                            class="order-id hl">{{$order->num}}</span><i
+                                                            class="ico copy"></i></span></div>
                                             </div>
-                                            <div class="order-time expired">
-                                                <label data-remaining="Времени осталось"
-                                                       data-status="Статус заказа"></label>
-                                                <div><span id="order_time" class="hl" data-time="16:32"
-                                                           data-expired="Заказ истек" data-exchange="Получено"
-                                                           data-done="Завершено" data-emergency="Ответ пользователя"
-                                                           data-refund="Возвращено"></span></div>
+                                            <div class="order-time {{$order->status}}">
+                                                <label data-remaining="{{__('Time remaining')}}"
+                                                       data-status="{{__('Order status')}}"></label>
+                                                <div><span id="order_time" class="hl"
+                                                           data-time="{{$order->dateTime}}"
+                                                           data-expired="{{__('Order expired')}}"
+                                                           data-exchange="{{__('Received')}}"
+                                                           data-done="{{__('Completed')}}"
+                                                           data-emergency="{{__('User response')}}"
+                                                           data-refund="{{__('Refunded')}}"></span></div>
                                             </div>
                                             <div>
-                                                <label>Тип курса</label>
-                                                <div><span class="order-type">Плавающий</span></div>
+                                                <label>{{__('Order type')}}</label>
+                                                <div><span class="order-type">{{__(ucfirst($order->type))}}</span></div>
                                             </div>
                                             <div>
-                                                <label>Время создания</label>
+                                                <label>{{__('Creation Time')}}</label>
                                                 <div>
-                                                    <time id="order_time_creation" timestamp="1702908100">18.12.2023
-                                                        18:01
+                                                    <time id="order_time_creation"
+                                                          timestamp="{{$order->created_at->timestamp}}">
+                                                        {{$order->created_at->format('d/m/Y g:i A')}}
                                                     </time>
                                                 </div>
                                             </div>
                                             <div class="none">
-                                                <label>Время получения</label>
+                                                <label>{{__('Received Time')}}</label>
                                                 <div>
-                                                    <time id="order_time_tx" timestamp="">01.01.1970 4:00</time>
+                                                    <time id="order_time_tx" timestamp="">01/01/1970 4:00 AM</time>
                                                 </div>
                                             </div>
                                             <div class="none">
-                                                <label>Время выполнения</label>
+                                                <label>{{__('Completed Time')}}</label>
                                                 <div>
-                                                    <time id="order_time_competed" timestamp="">01.01.1970 4:00</time>
+                                                    <time id="order_time_competed" timestamp="">01/01/1970 4:00 AM
+                                                    </time>
                                                 </div>
                                             </div>
                                         </div>
                                     </section>
                                     <div class="order-action-details" id="order_details">
+
                                         <div class="order-data-details">
                                             <div class="order-p-wrap">
-                                                <p class="order-p-amount">Отправьте <b
-                                                            class="order-amount pseudo-hint-blue"
-                                                            data-hint="Скопировано" data-copy="50" data-value="USDT">50
-                                                        USDT<sup>ETH</sup></b> на адрес</p>
+                                                <p class="order-p-amount">{{__('Send')}} <b
+                                                        class="order-amount pseudo-hint-blue"
+                                                        data-hint="Copied"
+                                                        data-copy="{{$order->fromQty}}"
+                                                        data-value="{{$order->fromCcy}}">{{$order->fromQty}} {{$order->fromCcy}}</b>
+                                                    {{__('to the address')}}:</p>
                                                 <p class="order-p-address"><span class="order-address-wrap"><b
-                                                                class="order-address order-address-from pseudo-hint-blue"
-                                                                data-copy="0xa107443c3dc6d4e52707cecb631962b959b44ed5"
-                                                                data-hint="Скопировано"
-                                                                title="0xa107443c3dc6d4e52707cecb631962b959b44ed5"><i>0xa10</i><i>7443</i><i>c3dc</i><i>6d4e</i><i>5270</i><i>7cec</i><i>b631</i><i>962b</i><i>959b</i><i>44ed5</i><i
-                                                                    class="ico copy"></i></b></span></p>
+                                                            class="order-address order-address-from pseudo-hint-blue"
+                                                            data-copy="{{$order->fromAddress}}"
+                                                            data-hint="{{__('Copied')}}"
+                                                            title="{{$order->fromAddress}}"><i>{{$order->fromAddress}}</i><i
+                                                                class="ico copy"></i></b></span></p>
                                             </div>
-                                            <p class="order-attention">Курс будет зафиксирован после получения <b>4</b>
-                                                подтверждений сети</p>
+                                            <p class="order-attention">{!! __('The exchange rate will be fixed after receiving <b>3</b> network confirmations.') !!}</p>
                                         </div>
                                         <div class="order-data-destination">
-                                            <p><label>Адрес получения BTC</label><br><span
-                                                        class="order-address-destination">bc1pfd0ykr7nv8rm6dsm5s6mlfyku2ahnxsg02jcgrtwq4awawlsjzmseulamn</span>
+                                            <p><label>{{__('Receiving address')}} {{$order->toCcy}}</label><br><span
+                                                    class="order-address-destination">{{$order->toAddress}}</span>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="order-extra-details more none" id="order_details_more"></div>
+                                <div class="order-extra-details more none" id="order_details_more">
+                                </div>
                             </section>
-
-                            <section class="order-emergency clrfix active" id="section_emergency"><h3>Ждём появления
-                                    транзакции в сети блокчейн</h3>
-                                <p>
-                                    На адрес, указанный в заказе, ещё не поступили средства. Мы осуществим обмен средств
-                                    после поступления транзакции и получения необходимого количества подтверждений сети
-                                    блокчейн. </p>
+                            <section
+                                class="order-emergency clrfix @if($order->status === \App\Enums\StatusEnum::EXPIRED->value) active @endif"
+                                id="section_emergency">
+                                <h3>{{__('I sent funds for exchange, but my order has expired. What should I do?')}}</h3>
+                                <p>{{__('We have not received your transaction yet, but you can choose what to do if funds arrive at this address within 24 hours. Pick one of the following:')}}</p>
+                                <div class="order-emergency-actions">
+                                    <label class="radio-circle"><input type="radio" name="order_refund"
+                                                                       value="{{\App\Enums\StatusEnum::EXCHANGE->name}}"><span>{{__('Continue my exchange (at the current market rate)')}}</span></label><br>
+                                    <label class="radio-circle"><input type="radio" name="order_refund"
+                                                                       value="{{\App\Enums\StatusEnum::REFUND->name}}"><span>{{__('Make a refund of the amount sent for exchange minus the network fee')}}</span></label>
+                                </div>
+                                <div class="order-emergency-submit active visible-overflow"
+                                     id="emergency_submit_section"
+                                     data-choice="{{\App\Enums\StatusEnum::EXCHANGE->name}}">
+                                    <div class="dinput hidden" id="refund_address_outer">
+                                        <textarea class="dinput-field" id="refund_address" required=""
+                                                  placeholder="Enter your {{$order->toCcy}} address"
+                                                  data-ccy="{{$order->toCcy}}" style="height: 56px;"></textarea>
+                                        <span id="refund_address_error"
+                                              class="fieldhint error">{{__('Invalid address')}}</span>
+                                        <div class="funcbuttons">
+                                            <button type="button" class="ico scanqr"
+                                                    id="refund_address_scanqr"></button>
+                                            <button type="button" class="ico close" id="refund_address_clear"></button>
+                                        </div>
+                                    </div>
+                                    <button class="btn std" id="emergency_submit"
+                                            data-exchange="{{__('Continue the exchange')}}"
+                                            data-refund="{{__('Make a refund')}}"></button>
+                                </div>
                             </section>
                             <section class="order-timeline clrfix" id="section_timeline">
                                 <div class="timeline-container">
-                                    <ol id="timeline_steps" class="clrfix expired" data-value="btc">
-                                        <li id="timeline_new" class="">
-                                            <div><span class="ico deposit"></span><label>Ожидаем поступления
-                                                    средств</label></div>
-                                        </li>
-                                        <li id="timeline_pending" class="">
-                                            <div><span class="ico pending"></span><label class="foremergency">Ожидаем
-                                                    ответ пользователя</label><label>Ожидаем подтверждения сети</label>
+                                    <ol id="timeline_steps"
+                                        @class(['clrfix', 'expired' => $order->status === \App\Enums\StatusEnum::EXPIRED->value]) data-value="{{strtolower($order->toCcy)}}">
+                                        <li id="timeline_new" @class(['active' => $order->status === \App\Enums\StatusEnum::NEW->value])>
+                                            <div><span
+                                                    class="ico deposit"></span><label>{{__('Awaiting deposit')}}</label>
                                             </div>
                                         </li>
-                                        <li id="timeline_exchange">
-                                            <div><span class="ico exchange"></span><label>Выполняем обмен</label></div>
+                                        <li id="timeline_pending" @class(['active' => $order->status === \App\Enums\StatusEnum::PENDING->value])>
+                                            <div><span class="ico pending"></span><label class="foremergency">
+                                                    {{__('Waiting for user response')}}</label><label>{{__('Awaiting confirmations')}}</label>
+                                            </div>
                                         </li>
-                                        <li id="timeline_done" class="">
+                                        <li id="timeline_exchange" @class(['active' => $order->status === \App\Enums\StatusEnum::EXCHANGE->value])>
+                                            <div><span
+                                                    class="ico exchange"></span><label>{{__('Perform exchange')}}</label>
+                                            </div>
+                                        </li>
+                                        <li id="timeline_done" @class(['active' => $order->status === \App\Enums\StatusEnum::DONE->value])>
                                             <div><span class="ico complete"></span><label
-                                                        class="forrefund">Возвращено</label><label>Обмен
-                                                    завершен</label></div>
+                                                    class="forrefund">{{__('Refunded')}}</label><label>{{__('Done')}}</label>
+                                            </div>
                                         </li>
                                     </ol>
                                 </div>
                             </section>
                             <section class="order-info">
                                 <section class="order-info-known">
-                                    <h3>Что нужно знать?</h3>
-                                    <div class="order-note"><em class="ico speed">­</em><span>Нужно <strong>4</strong> подтверждения USDT для осуществления обмена</span>
+                                    <h3>{{__('What do you need to know?')}}</h3>
+                                    <div class="order-note">
+                                        <em class="ico speed">­</em><span>{{__('You need <strong>3</strong> confirmations of the :coin blockchain for the exchange',['coin'=>$order->fromCcy])}}</span>
                                     </div>
-                                    <div class="order-note"><em class="ico coin usdt">­</em><span>Не отправляйте USDT через сторонний контракт! Такие транзакции не обрабатываются автоматически. Мы принимаем транзакции с <a
-                                                    href="https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">оригинального контракта</a> USDT</span>
+                                    <div class="order-note"><em
+                                            class="ico coin {{strtolower($order->toCcy)}}">­</em><span>{{__('The speed of confirmation of a :coin transaction depends on the level of congestion of the :coin blockchain network',['coin'=>$order->fromCcy])}}</span>
                                     </div>
-                                    <div class="order-note"><em class="ico warning">­</em><span><span>Пожалуйста, отправляйте транзакцию только в сети Ethereum. Если монеты будут отправлены в другой сети, заказ не будет выполнен автоматически</span></span>
+                                    <div class="order-note"><em class="ico recalc">­</em><span>{{__('If the amount of the transaction you sent differs from the initial amount specified in the order with a float rate, the order will be automatically recalculated.')}}</span>
                                     </div>
-                                    <div class="order-note"><em class="ico coin btc">­</em><span>Скорость подтверждения транзакции Bitcoin зависит от уровня загруженности сети блокчейн, подробнее в нашей <a
-                                                    href="/blog/guides/why-bitcoin-is-not-confirmed">статье</a></span>
-                                    </div>
-                                    <div class="order-note"><em class="ico recalc">­</em><span>Если сумма отправленной вами транзакции будет отличаться от первоначальной суммы указанной в заказе с плавающим курсом, заказ будет автоматически пересчитан.</span>
-                                    </div>
-                                    <div class="order-note"><em class="ico hours24">­</em><span>Если ваша транзакция поступит после истечения заказа, но в течение 24 часов, то данная транзакция автоматически отобразится в заказе. Вы сможете самостоятельно продолжить заказ или осуществить возврат средств.</span>
+                                    <div class="order-note"><em class="ico hours24">­</em><span>{{__('If your transaction is received after the expiration of the order, but within 24 hours, then this transaction will be automatically displayed in the order. You will be able to continue the order yourself or make a refund.')}}</span>
                                     </div>
                                 </section>
                                 <section class="order-notice clrfix buttonhl">
                                     <div class="active">
-                                        <h3>Уведомления о статусе заказа</h3>
-                                        <div class="order-notice-changeblock none" id="notice_tosubscribe">
-                                            <p>Введите свой email, если хотите получать уведомления об изменении статуса
-                                                этого заказа.</p>
-                                            <div class="input-texttype with-clrbtn empty"><input id="notice_email_input"
-                                                                                                 required="" type="text"
-                                                                                                 value=""
-                                                                                                 data-label="Email"
-                                                                                                 data-error-empty="Это обязательное поле"
-                                                                                                 data-error-invalid="Введенный адрес не является Email адресом">
+                                        <h3>{{__('Order status notifications')}}</h3>
+                                        <div class="order-notice-changeblock @if($order->email) none @endif "
+                                             id="notice_tosubscribe">
+                                            <p>{{__('Enter your email if you want to receive notifications about changes in the status of this order')}}</p>
+                                            <div class="input-texttype with-clrbtn empty">
+                                                <input id="notice_email_input"
+                                                       required="" type="text"
+                                                       value=""
+                                                       data-label="{{__('Email')}}"
+                                                       data-error-empty="{{__('This is a required field')}}"
+                                                       data-error-invalid="{{__('Email entered is not a valid email')}}">
                                                 <div class="ico input-texttype-clr"></div>
-                                                <label>Email</label>
+                                                <label>{{__('Email')}}</label>
                                                 <div class="input-texttype-error"><i class="ico"></i></div>
                                                 <div class="input-texttype-errortxt"></div>
                                             </div>
-                                            <button id="notice_submit" class="btn">Отправить</button>
+                                            <button id="notice_submit" class="btn">{{__('Confirm')}}</button>
                                         </div>
-                                        <div class="order-notice-changeblock" id="notice_subscribed">
-                                            <p>Вы подписались на уведомления по изменениям статуса вашего заказа, письмо
-                                                было отправлено на вашу почту <b id="notice_email">narek-21@mail.ru</b>
+                                        <div class="order-notice-changeblock @if(!$order->email) none @endif "
+                                             id="notice_subscribed">
+                                            <p>
+                                                {{__('You have subscribed to notifications of changes to this order; a notification has been sent to your email')}}
+                                                <b id="notice_email">{{$order->email}}</b>
                                             </p>
-                                            <a href="#" class="order-notice-wrong hoverhl" id="notice_wrong">Я хочу
-                                                изменить email для получения уведомлений</a>
+                                            <a href="/order/{{$order->num}}#"
+                                               class="order-notice-wrong hoverhl" id="notice_wrong">
+                                                {{__('I want to change my email for receiving notifications')}}
+                                            </a>
                                         </div>
                                         <span class="order-notice-image"></span>
                                     </div>
@@ -235,34 +272,7 @@
                         </div>
                     </div>
                 </section>
-                <template id="popup_email_notification">
-                    <div class="popup-content popup-order-email">
-                        <form id="popup_email_notification_form">
-                            <h3>Email уведомления о статусе заказа</h3>
-                            <p>Введите свой действующий email для получения уведомления об изменении статуса этого
-                                заказа. <b>Любые изменения</b> данных заказа возможны только через <b>подтверждение с
-                                    email</b> указанного в заказе.</p>
-                            <div class="popup-order-email-wrap">
-                                <div class="popup-order-email-control">
-                                    <input name="email" required="" data-label="Email"
-                                           data-error-empty="Это обязательное поле"
-                                           data-error-invalid="Введенный адрес не является Email адресом">
-                                    <label class="checkbox-tick"><input type="checkbox" name="nomore"> <span>Я больше не хочу видеть это уведомление</span></label>
-                                    <div class="popup-api-gen-btn">
-                                        <button type="button" id="popup_email_notification_submit" class="btn">
-                                            Подтвердить
-                                        </button>
-                                        <button type="button" id="popup_email_notification_close"
-                                                class="btn border cancel">Отказаться
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="order-notice-image"></div>
-                            </div>
-                        </form>
-                    </div>
-                </template>
-
+                <template id="popup_email_notification"></template>
             </div>
         </section>
     </main>
@@ -270,17 +280,22 @@
         <script type="text/javascript" src="{{asset('assets/js/v2/order.js')}}"></script>
         <script type="text/javascript">
             const order = @json($order);
-            console.log(order);
+
+            const secondsInTheFuture = new Date(order.created_at).getTime() / 1000;
+            const secondsNow = new Date().getTime() / 1000;
+            const difference = Math.round(secondsInTheFuture - secondsNow);
+
             document.addEventListener("DOMContentLoaded", function () {
                 moment.locale('{{app()->getLocale()}}');
-                APP.highlightingColor('{{$order->fromCcy}}', '{{$order->toCcy}}');
+                APP.highlightingColor(order.fromCcy, order.toCcy);
+
                 let F = UI.func;
                 let orderData = {
                     id: order.num,
-                    email: 'narek-21@mail.ru',
-                    isAuth: !!parseInt('{{auth()->check()}}'),
-                    timeStart: 3,
-                    timeLeft: 1797,
+                    email: order.email,
+                    isAuth: order.user_id !== null,
+                    timeStart: 1,
+                    timeLeft: difference + 1800,
                     from: {
                         amount: order.fromQty,
                         address: order.fromAddress,
@@ -301,7 +316,7 @@
                         tx: null,
                         timeBlock: null
                     },
-                    status: 'NEW',
+                    status: order.status.toUpperCase(),
                     refundonly: false,
                     emergency: {
                         status: [],

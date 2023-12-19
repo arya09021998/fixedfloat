@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\StatusEnum;
 use App\Models\AddressBook;
+use App\Models\Coin;
 use App\Models\Order;
 use App\Models\ReferralLink;
 use App\Models\User;
@@ -125,6 +126,7 @@ class AjaxController extends Controller
 
         return response(['code' => 0, 'data' => null, 'msg' => 'OK']);
     }
+
 
     public function userAddressBook(Request $request)
     {
@@ -353,11 +355,14 @@ class AjaxController extends Controller
             ->when($request->input('filter.status', []), function ($query, $status) {
                 if (!empty($status)) {
                     $statuses = in_array("4", $status, true)
-                        ? [StatusEnum::APPROVED->value]
+                        ? [StatusEnum::DONE->value]
                         : [
-                            StatusEnum::DECLINED->value,
+                            StatusEnum::NEW->value,
                             StatusEnum::PENDING->value,
-                            StatusEnum::EXPIRED->value
+                            StatusEnum::EXCHANGE->value,
+                            StatusEnum::WITHDRAW->value,
+                            StatusEnum::EMERGENCY->value,
+                            StatusEnum::REFUND->value,
                         ];
                     $query->whereIn('status', $statuses);
                 }
@@ -388,11 +393,14 @@ class AjaxController extends Controller
             ->when($request->input('filter.status', []), function ($query, $status) {
                 if (!empty($status)) {
                     $statuses = in_array("4", $status, true)
-                        ? [StatusEnum::APPROVED->value]
+                        ? [StatusEnum::DONE->value]
                         : [
-                            StatusEnum::DECLINED->value,
+                            StatusEnum::NEW->value,
                             StatusEnum::PENDING->value,
-                            StatusEnum::EXPIRED->value
+                            StatusEnum::EXCHANGE->value,
+                            StatusEnum::WITHDRAW->value,
+                            StatusEnum::EMERGENCY->value,
+                            StatusEnum::REFUND->value,
                         ];
                     $query->whereIn('status', $statuses);
                 }
@@ -534,12 +542,33 @@ class AjaxController extends Controller
             'tt' => ['required'],
             'fromQty' => ['required'],
         ]);
+
         if ($validator->fails()) {
             return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
         }
         $data = $validator->validated();
-        $data['fromAddress'] = $data['toAddress'];
-        $data['user_id'] = $request->user()?->id;
+        $oldOrder = Order::where([
+            ['fromCcy', $data['fromCcy']],
+            ['toCcy', $data['toCcy']],
+            ['toAddress', $data['toAddress']],
+        ])->first();
+        if (!is_null($oldOrder)) {
+            return response(['code' => 0, 'data' => $oldOrder->num, 'msg' => 'OK']);
+        }
+
+        $coin = Coin::whereName($data['fromCcy'])->whereHas('wallets', function ($query) {
+            $query->where('enabled', true);
+        })->with(['wallets' => function ($query) {
+            $query->where('enabled', true)->inRandomOrder()->take(1);
+        }])->first();
+        if (is_null($coin)) {
+            return response(['code' => 300, 'data' => null, 'msg' => __('Error')]);
+        }
+        $user = $request->user();
+        $wallet = $coin->wallets->first();
+        $data['fromAddress'] = $wallet->address;
+        $data['user_id'] = $user?->id;
+        $data['email'] = $user?->email;
         $data['num'] = unique_order_num();
         if ($referralLink = ReferralLink::find($request->cookie('referral_link_id'))) {
             $data['referral_link_id'] = $referralLink->id;
@@ -577,5 +606,100 @@ class AjaxController extends Controller
             Log::error(__METHOD__ . ' - ' . $throwable->getMessage());
         }
         return null;
+    }
+
+    public function orderStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'exists:orders,num'],
+        ]);
+
+        if ($validator->fails()) {
+            return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
+        }
+        $data = $validator->validate();
+        $order = Order::whereNum($data['id'])->first();
+        $order->status = strtoupper($order->status);
+        return response(['code' => 0, 'data' => $order, 'msg' => 'OK']);
+    }
+
+    public function orderSetEmail(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'exists:orders,num'],
+            'email' => ['required', 'email'],
+        ]);
+
+        if ($validator->fails()) {
+            return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
+        }
+        $data = $validator->validate();
+
+        $order = Order::whereNum($data['id'])->first();
+        $order->update(['email' => $data['email']]);
+        return response(['code' => 0, 'data' => $data['email'], 'msg' => 'OK']);
+    }
+
+    public function orderAddressInfo(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'currency' => ['required', 'exists:coins,name'],
+            'address' => ['required']
+        ]);
+
+        if ($validator->fails()) {
+            return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
+        }
+
+        return response(['code' => 0, 'data' => null, 'msg' => 'OK']);
+    }
+
+    public function orderSetEmergency(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'exists:orders,num'],
+            'choice' => ['required', 'in:' . implode(',', [StatusEnum::REFUND->name, StatusEnum::EXCHANGE->name])],
+            'address' => ['sometimes', 'nullable']
+        ]);
+
+        if ($validator->fails()) {
+            return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
+        }
+        $data = $validator->validate();
+        $data['status'] = strtolower($data['choice']);
+        unset($data['choice']);
+        if (isset($data['address'])) {
+            $data['toAddress'] = $data['address'];
+            unset($data['address']);
+        }
+        $order = Order::whereNum($data['id'])->first();
+        unset($data['id']);
+        //$data['created_at'] = now();
+        $order->update($data);
+        return response(['code' => 0, 'data' => $order, 'msg' => 'OK']);
+    }
+
+    public function orderGetDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'exists:orders,num']
+        ]);
+
+        if ($validator->fails()) {
+            return response(['code' => 1, 'data' => null, 'msg' => $validator->errors()->first()]);
+        }
+        $data = $validator->validate();
+        $order = Order::whereNum($data['id'])->first();
+        $diff = now()->diff($order->created_at->addMinutes(30));
+        $order->status = $diff->invert && $order->status === StatusEnum::NEW->value
+            ? StatusEnum::EXPIRED->value
+            : $order->status;
+        $minute = (strlen($diff->i) > 1 ? $diff->i : '0' . $diff->i);
+        $second = (strlen($diff->s) > 1 ? $diff->s : '0' . $diff->s);
+        $order->dateTime = $diff->invert ? "00:00" : "$minute:$second";
+        $order->status = strtoupper($order->status);
+        return response(['code' => 0, 'data' => $order, 'msg' => 'OK']);
     }
 }

@@ -459,27 +459,28 @@
             };
         window.InitOrder = function (e) {
             s.init(e), l.id("emergency_submit") && o.init();
-            let t = new APP.WSClient("wss://fixedfloat.com/ws");
-            t.init(function () {
-                a.wsTry = !0;
-                let e = { channel: "orderChanges", id: s.id };
-                s.token && (e.token = s.token), this.subscribe(e);
-            }),
-                t.message("subscribed", function (e) {
-                    (a.wsReady = !0), s.update(e);
-                }),
-                t.message("orderChanges", function (e) {
-                    (a.wsReady = !0), s.update(e);
-                }),
-                t.error(function (e) {
-                    (a.wsTry = !1), (a.wsReady = !1);
-                });
+
+            // let t = new APP.WSClient("wss://localhost/ws");
+            // t.init(function () {
+            //     a.wsTry = !0;
+            //     let e = { channel: "orderChanges", id: s.id };
+            //     s.token && (e.token = s.token), this.subscribe(e);
+            // }),
+            //     t.message("subscribed", function (e) {
+            //         (a.wsReady = !0), s.update(e);
+            //     }),
+            //     t.message("orderChanges", function (e) {
+            //         (a.wsReady = !0), s.update(e);
+            //     }),
+            //     t.error(function (e) {
+            //         (a.wsTry = !1), (a.wsReady = !1);
+            //     });
             let r = !1;
             setInterval(function () {
-                t.isProblem &&
+                //t.isProblem &&
                     !r &&
                     ((r = !0),
-                    console.log("WS problem"),
+                    //console.log("WS problem"),
                     APP.api("orderStatus", { id: s.id })
                         .then(function (e) {
                             s.update(e.data), (r = !1);
@@ -487,7 +488,7 @@
                         .catch(function (e) {
                             r = !1;
                         }));
-            }, 3e4),
+            }, 5000),
                 delete window.InitOrder;
         };
     })();

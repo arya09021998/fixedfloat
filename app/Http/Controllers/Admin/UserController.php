@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\StatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\AffiliateCollection;
-use App\Http\Resources\AffiliateResource;
-use App\Models\Affiliate;
-use DB;
+use App\Http\Resources\UserResource;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class AffiliateController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $affiliates = Affiliate::orderByDesc('id')->paginate(50);
-        return view('admin.affiliates.index', [
-            'affiliates' => AffiliateResource::collection($affiliates)
+        $users = User::whereDoesntHave('role', function ($query) {
+            $query->where('name', Role::SUPER_ADMIN);
+        })->orderByDesc('id')->paginate(50);
+        return view('admin.users.index', [
+            'users' => UserResource::collection($users)
         ]);
     }
 
@@ -68,8 +68,8 @@ class AffiliateController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $affiliate = Affiliate::findOrFail($id);
-        $affiliate->delete();
+        $user = User::findOrFail($id);
+        $user->delete();
         return back()->with('success', 'Пользователь удалён');
     }
 }

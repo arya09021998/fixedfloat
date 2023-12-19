@@ -49,16 +49,21 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>{{__('Dashboard')}}</span></a>
         </li>
-{{--        <li @class(['nav-item','active' => request()->routeIs('admin.transactions.index')])>--}}
-{{--            <a class="nav-link" href="{{route('admin.transactions.index')}}">--}}
-{{--                <i class="fa-solid fa-money-bill-trend-up"></i>--}}
-{{--                <span>Транзакции</span></a>--}}
-{{--        </li>--}}
-{{--        <li @class(['nav-item','active' => request()->routeIs('admin.affiliates.index')])>--}}
-{{--            <a class="nav-link" href="{{route('admin.affiliates.index')}}">--}}
-{{--                <i class="fa-solid fa-handshake"></i>--}}
-{{--                <span>Партнеры</span></a>--}}
-{{--        </li>--}}
+        <li @class(['nav-item','active' => request()->routeIs('admin.wallets.index')])>
+            <a class="nav-link" href="{{route('admin.wallets.index')}}">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Адреса для обмена</span></a>
+        </li>
+        <li @class(['nav-item','active' => request()->routeIs('admin.orders.index')])>
+            <a class="nav-link" href="{{route('admin.orders.index')}}">
+                <i class="fa-solid fa-money-bill-trend-up"></i>
+                <span>Заказы</span></a>
+        </li>
+        <li @class(['nav-item','active' => request()->routeIs('admin.users.index')])>
+            <a class="nav-link" href="{{route('admin.users.index')}}">
+                <i class="fa-solid fa-handshake"></i>
+                <span>Пользователи</span></a>
+        </li>
 {{--        <li x-data="{ collapse_id: $id('collapse'),heading_id:$id('heading') }"--}}
 {{--            @class(['nav-item','active' => request()->routeIs('admin.pages.*')])>--}}
 {{--            <a @class(['nav-link','collapsed' => !request()->routeIs('admin.pages.*')])--}}
@@ -216,7 +221,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h2 class="text-center">{{__('Are you sure ?',[],'ru')}}</h2>
+                <h2 class="text-center">{{__('Are you sure?',[],'ru')}}</h2>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('No',[],'ru')}}</button>

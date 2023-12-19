@@ -2475,6 +2475,12 @@
         </style>
     @endif
     @stack('css')
+    @sectionMissing('highlighting_style')
+        <style id="highlighting_style"></style>
+    @endif
+    @hasSection('highlighting_style')
+        @yield('highlighting_style')
+    @endif
 </head>
 <body @class(['index' => request()->routeIs('*.home'), 'order' => request()->routeIs('*.order')])>
 {{$slot}}

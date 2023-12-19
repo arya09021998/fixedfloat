@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('num')->index();
+            $table->string('email')->nullable();
             $table
                 ->foreignId('user_id')
                 ->nullable()
@@ -41,7 +42,7 @@ return new class extends Migration {
             $table->text('toTxId')->nullable();
             $table->unsignedInteger('fromConfirmation')->default(0);
             $table->unsignedInteger('toConfirmation')->default(0);
-            $table->enum('status', StatusEnum::values())->default(StatusEnum::PENDING->value);
+            $table->enum('status', StatusEnum::values())->default(StatusEnum::NEW->value);
             $table->text('qrAddress')->nullable();
             $table->text('qrSum')->nullable();
             $table->timestamp('fromReceiptTime')->nullable();

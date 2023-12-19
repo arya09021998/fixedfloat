@@ -12,17 +12,17 @@
         <div class="card-header">
             <div class="row" id="filters">
                 <div class="col-md-12 pb-3">
-                    <h4 class="card-title">Партнеры</h4>
+                    <h4 class="card-title">Пользователи</h4>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="affiliates_table"
+                <table id="users_table"
                        class="table table-sm table-bordered display responsive nowrap w-100">
                     <thead>
                     <tr>
-                        <th scope="col">Имя пользователя</th>
+                        <th scope="col">Имя</th>
                         <th scope="col">Реферальная ссылка</th>
                         <th scope="col">Минимальная выплата</th>
                         <th scope="col">Количество рефералов</th>
@@ -33,23 +33,24 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($affiliates as $affiliate)
-                        @php($affiliate = new \App\Models\Affiliate($affiliate->resolve()))
-                        <tr class="affiliates-item">
-                            <td>{{$affiliate->username}}</td>
-                            <td>{{url('?ref='.$affiliate->ref)}}</td>
-                            <td>{{$affiliate->min_payout}}</td>
-                            <td>{{$affiliate->referrals_all_count}}</td>
-                            <td>{{$affiliate->referrals_approved_count}}</td>
-                            <td>{{$affiliate->referrals_amount}} BTC</td>
-                            <td>{{$affiliate->created_at}}</td>
+                    @foreach($users as $user)
+                        @php($user = $user->resolve())
+
+                        <tr class="users-item">
+                            <td>{{$user['name']}}</td>
+                            <td>{{url('?ref='.$user['ref'])}}</td>
+                            <td>{{$user['min_payout']}}</td>
+                            <td>{{$user['referrals_all_count']}}</td>
+                            <td>{{$user['referrals_approved_count']}}</td>
+                            <td>{{$user['referrals_amount']}} </td>
+                            <td>{{$user['created_at']}}</td>
                             <td>
                                 <div class='d-flex' role='group'>
                                     <a type="button"
                                        class="btn btn-sm btn-outline-danger mr-1"
                                        data-toggle="modal"
                                        data-target="#confirmModal"
-                                       data-url="{{route('admin.affiliates.destroy',[$affiliate->id])}}">
+                                       data-url="{{route('admin.users.destroy',[$user['id']])}}">
                                         Удалить
                                     </a>
                                 </div>
@@ -60,10 +61,10 @@
                     <tfoot>
                     <tr>
                         <th colspan="1">
-                            <p class="mb-0">Всего: {{ $affiliates->total() }}</p>
+                            <p class="mb-0">Всего: {{ $users->total() }}</p>
                         </th>
                         <th colspan="7">
-                            {{ $affiliates->appends(request()->input())->links() }}
+                            {{ $users->appends(request()->input())->links() }}
                         </th>
                     </tr>
                     </tfoot>
@@ -76,7 +77,7 @@
         <script src="{{asset('assets/admin/vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
         <script>
             $(document).ready(function () {
-                $('#affiliates_table').DataTable({
+                $('#users_table').DataTable({
                     info: false,
                     ordering: false,
                     paging: false

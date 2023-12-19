@@ -1,7 +1,6 @@
 <x-app-layout>
     <main>
         <section id="index_main" class="main-section withheader darkbg">
-{{--            <style id="highlighting_style"></style>--}}
             @include('includes.header')
             @includeWhen(!auth()->check(),'includes.auth')
             <div class="main-background">

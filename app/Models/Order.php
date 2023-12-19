@@ -83,6 +83,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Order withoutTrashed()
+ * @property string $email
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereEmail($value)
  * @mixin \Eloquent
  */
 class Order extends Model

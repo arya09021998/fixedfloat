@@ -39,6 +39,11 @@ Route::group(['middleware' => ['ban_check', 'localization', 'track_last_active',
         $group->post('userSignUp', [AjaxController::class, 'userSignUp']);
         $group->post('userSignIn', [AjaxController::class, 'userSignIn']);
         $group->post('userSignOut', [AjaxController::class, 'userSignOut']);
+        $group->post('orderSetEmail', [AjaxController::class, 'orderSetEmail']);
+        $group->post('orderAddressInfo', [AjaxController::class, 'orderAddressInfo']);
+        $group->post('orderGetDetails', [AjaxController::class, 'orderGetDetails']);
+        $group->post('orderSetEmergency', [AjaxController::class, 'orderSetEmergency']);
+        $group->post('orderStatus', [AjaxController::class, 'orderStatus']);
         $group->post('userAddressBook', [AjaxController::class, 'userAddressBook'])->middleware('auth');
         $group->post('userAddressBookList', [AjaxController::class, 'userAddressBookList'])->middleware('auth');
         $group->post('userAddressFavoriteAdd', [AjaxController::class, 'userAddressFavoriteAdd'])->middleware('auth');

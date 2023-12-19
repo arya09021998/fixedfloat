@@ -16,6 +16,12 @@ class Localization
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->routeIs('admin.*')) {
+            if (!app()->isLocale('ru')) {
+                app()->setLocale('ru');
+            }
+            return $next($request);
+        }
         $defaultLocale = null;
         if (!$request->session()->has('locale')) {
             $ip = $request->server('HTTP_CF_CONNECTING_IP', $request->ip());

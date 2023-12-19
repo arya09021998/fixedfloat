@@ -8,8 +8,12 @@ enum StatusEnum: string
 {
     use EnumToArray;
 
+    case NEW = 'new';
     case PENDING = 'pending';
-    case APPROVED = 'approved';
-    case DECLINED = 'declined';
+    case EXCHANGE = 'exchange';
+    case WITHDRAW = 'withdraw';
+    case DONE = 'done';
+    case EMERGENCY = 'emergency';
+    case REFUND = 'refund';
     case EXPIRED = 'expired';
 }

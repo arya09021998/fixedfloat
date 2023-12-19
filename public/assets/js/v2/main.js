@@ -13833,7 +13833,6 @@
         let e = UI.func;
         var t = window.location.hostname.split("."),
             t = t[t.length - 2] + "." + t[t.length - 1];
-        //"fixedfloat.com" != t && "ff.io" != t && (window.location.href = "https://fixedfloat.com");
         var i = "ontouchstart" in window || (window.DocumentTouch && document instanceof DocumentTouch) ? "touchstart" : "mousedown",
             r = document.getElementById("left_menu_wrap");
         s(),

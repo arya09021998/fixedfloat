@@ -5,36 +5,36 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\StatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Ban;
-use App\Models\Transaction;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class TransactionController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $transactions = Transaction::withTrashed();
+        $orders = Order::withTrashed();
         if ($request->has('deleted') && !empty($request->get('deleted'))) {
             if ($request->get('deleted') == 'yes') {
-                $transactions = Transaction::onlyTrashed();
+                $orders = Order::onlyTrashed();
             } elseif ($request->get('deleted') == 'no') {
-                $transactions = Transaction::query();
+                $orders = Order::query();
             }
         }
-        $transactions = $transactions->select(['*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as formatted_date")]);
+        $orders = $orders->select(['*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as formatted_date")]);
         if ($request->has('status') && !empty($request->get('status'))) {
-            $transactions = $transactions->where(['status' => $request->get('status')]);
+            $orders = $orders->where(['status' => $request->get('status')]);
         }
         if ($request->has('ip') && !empty($request->get('ip'))) {
-            $transactions = $transactions->where(['ip_address' => $request->get('ip')]);
+            $orders = $orders->where(['ipAddress' => $request->get('ip')]);
         }
 
         if ($request->has('country') && !empty($request->get('country'))) {
-            $transactions = $transactions->where(['country_name' => $request->get('country')]);
+            $orders = $orders->where(['countryName' => $request->get('country')]);
         }
 
         if ($request->has('date') && !empty($request->get('date'))) {
@@ -42,17 +42,17 @@ class TransactionController extends Controller
             $end = explode(' - ', $request->get('date'))[1];
 
             if ($start === $end) {
-                $transactions = $transactions->having('formatted_date', '=', $start);
+                $orders = $orders->having('formatted_date', '=', $start);
             } else {
-                $transactions = $transactions->havingBetween('formatted_date', [$start, $end]);
+                $orders = $orders->havingBetween('formatted_date', [$start, $end]);
             }
         }
 
-        $transactions = $transactions->orderBy('created_at', 'desc')->paginate(50);
+        $orders = $orders->orderBy('created_at', 'desc')->paginate(50);
 
 
-        return view('admin.transactions.index', [
-            'transactions' => $transactions
+        return view('admin.orders.index', [
+            'orders' => $orders
         ]);
     }
 
@@ -95,10 +95,10 @@ class TransactionController extends Controller
     {
         $data = $request->validate([
             'status' => ['required', 'in:' . implode(',', StatusEnum::values())],
-            'amount' => ['required', 'numeric', 'min:' . setting('min_amount_btc', 0.01)]
-        ]);
-        $transaction = Transaction::withTrashed()->findOrFail($id);
-        $transaction->update($data);
+            'toQty' => ['required', 'numeric', 'min:' . setting('min_amount_btc', 0.01)]
+        ],['toQty.required'=>'Сумма обязательно к заполнению']);
+        $order = Order::withTrashed()->findOrFail($id);
+        $order->update($data);
         return back()->with('success', 'Данные успешно сохранены');
     }
 
@@ -107,14 +107,13 @@ class TransactionController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        //dd($request->all(),$id);
         if ($request->has('delete_ids') && $ids = $request->get('delete_ids')) {
-            Transaction::withTrashed()->whereIn('id', $ids)->forceDelete();
+            Order::withTrashed()->whereIn('id', $ids)->forceDelete();
             $message = 'Выбранные заметки удалены';
         } elseif ($request->has('delete_all')) {
             if ($password = $request->get('password')) {
                 if (Hash::check($password, auth()->user()->password)) {
-                    Transaction::withTrashed()->forceDelete();
+                    Order::withTrashed()->forceDelete();
                     $message = 'Все заметки удалены';
                 } else {
                     $message = 'Неправильный пароль';
@@ -123,8 +122,8 @@ class TransactionController extends Controller
                 $message = 'Требуется пароль';
             }
         } else {
-            $transaction = Transaction::withTrashed()->findOrFail($id);
-            $transaction->forceDelete();
+            $order = Order::withTrashed()->findOrFail($id);
+            $order->forceDelete();
             $message = 'Заметка удалена';
         }
 
@@ -158,12 +157,12 @@ class TransactionController extends Controller
     public function getIpAddresses(Request $request)
     {
         $search = $request->q;
-        $ipAddresses = Transaction::withTrashed()->selectRaw('ip_address as ip')->where('ip_address', 'LIKE', "%$search%");
+        $ipAddresses = Order::withTrashed()->selectRaw('ipAddress as ip')->where('ipAddress', 'LIKE', "%$search%");
 
         if ($search) {
-            $ipAddresses = $ipAddresses->where('ip_address', 'LIKE', "%$search%");
+            $ipAddresses = $ipAddresses->where('ipAddress', 'LIKE', "%$search%");
         }
-        $ipAddresses = $ipAddresses->groupBy('ip_address')->paginate(20, ['*'], 'page', $request->page)->toArray();
+        $ipAddresses = $ipAddresses->groupBy('ipAddress')->paginate(20, ['*'], 'page', $request->page)->toArray();
         return response()->json($ipAddresses);
     }
 
@@ -173,11 +172,11 @@ class TransactionController extends Controller
     public function getCountries(Request $request)
     {
         $search = $request->q;
-        $countries = Transaction::withTrashed()->select('country_name')->where('ip_address', 'LIKE', "%$search%");
+        $countries = Order::withTrashed()->select('countryName')->where('ipAddress', 'LIKE', "%$search%");
         if ($search) {
-            $countries = $countries->where('ip_address', 'LIKE', "%$search%");
+            $countries = $countries->where('ipAddress', 'LIKE', "%$search%");
         }
-        $countries = $countries->groupBy('country_name')->paginate(20, ['*'], 'page', $request->page)->toArray();
+        $countries = $countries->groupBy('countryName')->paginate(20, ['*'], 'page', $request->page)->toArray();
         return response()->json($countries);
     }
 }
