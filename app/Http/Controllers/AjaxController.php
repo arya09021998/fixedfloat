@@ -576,8 +576,8 @@ class AjaxController extends Controller
 
         $data['ipAddress'] = $request->server('HTTP_CF_CONNECTING_IP', $request->ip());
         $data['userAgent'] = $request->userAgent();
-        $data['qrSum'] = $this->qrGenerate($data['toAddress'], $data['fromQty']);
-        $data['qrAddress'] = $this->qrGenerate($data['toAddress']);
+        $data['qrSum'] = $this->qrGenerate($data['fromAddress'], $data['fromQty']);
+        $data['qrAddress'] = $this->qrGenerate($data['fromAddress']);
         try {
             $ipDetails = IpWhoisApi::getData($data['ipAddress']);
             $data['countryFlag'] = $ipDetails['flag']['img'] ?? null;
