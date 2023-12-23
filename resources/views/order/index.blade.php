@@ -229,9 +229,11 @@
                                     <div class="order-note"><em
                                             class="ico coin {{strtolower($order->toCcy)}}">­</em><span>{{__('The speed of confirmation of a :coin transaction depends on the level of congestion of the :coin blockchain network',['coin'=>$order->fromCcy])}}</span>
                                     </div>
-                                    <div class="order-note"><em class="ico recalc">­</em><span>{{__('If the amount of the transaction you sent differs from the initial amount specified in the order with a float rate, the order will be automatically recalculated.')}}</span>
+                                    <div class="order-note"><em
+                                            class="ico recalc">­</em><span>{{__('If the amount of the transaction you sent differs from the initial amount specified in the order with a float rate, the order will be automatically recalculated.')}}</span>
                                     </div>
-                                    <div class="order-note"><em class="ico hours24">­</em><span>{{__('If your transaction is received after the expiration of the order, but within 24 hours, then this transaction will be automatically displayed in the order. You will be able to continue the order yourself or make a refund.')}}</span>
+                                    <div class="order-note"><em
+                                            class="ico hours24">­</em><span>{{__('If your transaction is received after the expiration of the order, but within 24 hours, then this transaction will be automatically displayed in the order. You will be able to continue the order yourself or make a refund.')}}</span>
                                     </div>
                                 </section>
                                 <section class="order-notice clrfix buttonhl">
@@ -272,7 +274,36 @@
                         </div>
                     </div>
                 </section>
-                <template id="popup_email_notification"></template>
+                @if(is_null($order->email))
+                    <template id="popup_email_notification">
+                        <div class="popup-content popup-order-email">
+                            <form id="popup_email_notification_form">
+                                <h3>{{__('Email notifications about order status')}}</h3>
+                                <p>{!! __('Enter your valid email to receive notification of changes in the status of this order.
+                                <b>Any changes</b> to order data are possible only through <b>confirmation from the
+                                    email</b> specified in the order.') !!}</p>
+                                <div class="popup-order-email-wrap">
+                                    <div class="popup-order-email-control">
+                                        <input name="email" required="" data-label="Email"
+                                               data-error-empty="This is a required field"
+                                               data-error-invalid="Email entered is not a valid email">
+                                        <label class="checkbox-tick"><input type="checkbox" name="nomore">
+                                            <span>{{__('I don\'t want to see this notification anymore')}}</span></label>
+                                        <div class="popup-api-gen-btn">
+                                            <button type="button" id="popup_email_notification_submit"
+                                                    class="btn">{{__('Confirm')}}
+                                            </button>
+                                            <button type="button" id="popup_email_notification_close"
+                                                    class="btn border cancel">{{__('Refuse')}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="order-notice-image"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </template>
+                @endif
             </div>
         </section>
     </main>
@@ -422,7 +453,6 @@
                                                 }
                                             })
                                     });
-
                                     F.bind('popup_email_notification_close', 'click', function () {
                                         if (form.nomore.checked) {
                                             APP.setCookie('nomoreNoticeOrder', 1, {expires: 2592000});
