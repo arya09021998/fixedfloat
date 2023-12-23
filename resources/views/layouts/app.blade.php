@@ -5,17 +5,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{setting('app_name',config('app.name'))}} | {{__('Instant cryptocurrency exchange')}}</title>
     <meta name="description"
-          content="Instant cryptocurrency exchange with Lightning Network! Best rates and large volumes of currencies. Try now!">
+          content="Instant automatic aggregator!">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta property="og:image" content="{{asset('/assets/images/public/ogimage.jpg')}}">
     <meta property="og:site_name" content="{{setting('app_name',config('app.name'))}}">
-    <meta name="title" content="{{setting('app_name',config('app.name'))}} | Instant cryptocurrency exchange">
+    <meta name="title" content="{{setting('app_name',config('app.name'))}} | Instant automatic aggregator">
     <meta property="og:title" content="{{setting('app_name',config('app.name'))}} | Instant cryptocurrency exchange">
     <meta property="og:description"
-          content="Instant cryptocurrency exchange with Lightning Network! Best rates and large volumes of currencies. Try now!">
+          content="Instant automatic aggregator!">
     <link rel="shortcut icon" href="{{asset('/assets/images/favicon.png')}}">
     @foreach(config('app.available_locales') as $key => $locale)
         @php($langUrl = ltrim(str_replace('//','/',str_replace(app()->getLocale(),'',$locale.'/'.request()->path())),'/'))

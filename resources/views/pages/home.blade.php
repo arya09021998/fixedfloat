@@ -182,7 +182,7 @@
             </div>
             <div class="wrapper">
                 <div class="exchange-form-outer">
-                    <h1>{{__('Lightning cryptocurrency exchange')}}</h1>
+                    <h1>{{__('Instant automatic aggregator')}}</h1>
                     <form class="exchange-form">
                         <div class="exchange-amounts" id="exchange_amount">
                             <div class="col">
