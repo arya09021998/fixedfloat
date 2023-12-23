@@ -285,8 +285,8 @@
                                 <div class="popup-order-email-wrap">
                                     <div class="popup-order-email-control">
                                         <input name="email" required="" data-label="Email"
-                                               data-error-empty="This is a required field"
-                                               data-error-invalid="Email entered is not a valid email">
+                                               data-error-empty="{{__('This is a required field')}}"
+                                               data-error-invalid="{{__('Email entered is not a valid email')}}">
                                         <label class="checkbox-tick"><input type="checkbox" name="nomore">
                                             <span>{{__('I don\'t want to see this notification anymore')}}</span></label>
                                         <div class="popup-api-gen-btn">
