@@ -65,12 +65,12 @@
 
             gtag('js', new Date());
             gtag('config', '{{$googleAnalyticId}}');
-                @if (setting('google_conversion_id') && setting('google_conversion_label')) {
-                gtag('event', 'conversion', {'send_to': '{{setting('google_conversion_id')}}/{{setting('google_conversion_label')}}'});
+            @if (setting('google_conversion_id') && setting('google_conversion_label'))
+            gtag('event', 'conversion', {'send_to': '{{setting('google_conversion_id')}}/{{setting('google_conversion_label')}}'});
             @endif
         </script>
     @endif
-    <!-- Google Tag Manager -->
+    {{--  Google Tag Manager  --}}
     <script>
         (function (w, d, s, l, i) {
             w[l] = w[l] || [];
@@ -86,7 +86,7 @@
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-MSKPF99V');
     </script>
-    <!-- End Google Tag Manager -->
+    {{-- End Google Tag Manager  --}}
     @if(request()->routeIs('*.home'))
         <style type="text/css" id="jssnowflakes">
             .main-bg-snow > .snowflake:nth-child(1) {
