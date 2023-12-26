@@ -598,9 +598,10 @@ class AjaxController extends Controller
                 ->format($format)
                 ->size(205)
                 ->style('square');
+            $text = is_null($amount) ? $btcAddress : "$btcAddress?amount=$amount";
             $img = $qr
                 ->errorCorrection('H')
-                ->BTC($btcAddress, $amount);
+                ->generate($text);
             return 'data:image/png;base64,' . base64_encode($img);
         } catch (Throwable $throwable) {
             Log::error(__METHOD__ . ' - ' . $throwable->getMessage());
