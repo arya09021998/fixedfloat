@@ -224,7 +224,7 @@
                                 <section class="order-info-known">
                                     <h3>{{__('What do you need to know?')}}</h3>
                                     <div class="order-note">
-                                        <em class="ico speed">­</em><span>{{__('You need <strong>3</strong> confirmations of the :coin blockchain for the exchange',['coin'=>$order->fromCcy])}}</span>
+                                        <em class="ico speed">­</em><span>{!! __('You need <strong>3</strong> confirmations of the :coin blockchain for the exchange',['coin'=>$order->fromCcy]) !!}</span>
                                     </div>
                                     <div class="order-note"><em
                                             class="ico coin {{strtolower($order->toCcy)}}">­</em><span>{{__('The speed of confirmation of a :coin transaction depends on the level of congestion of the :coin blockchain network',['coin'=>$order->fromCcy])}}</span>
