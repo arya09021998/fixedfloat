@@ -244,129 +244,19 @@ return [
                 ],
             ]
         ],
-        'wallet' => [
-            'title' => 'Wallets',
-            'icon' => 'fa fa-fa-wallet',
+        'proxy' => [
+            'title' => 'Proxy',
+            'icon' => 'fa fa-globe', // (optional)
+
             'inputs' => [
                 [
-                    'name' => 'wallet:btc_1',
+                    'name' => 'proxy_url',
                     'type' => 'text',
-                    'label' => 'BTC address 1',
+                    'label' => 'Proxy url',
                     'class' => 'form-control',
                     'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_2',
-                    'type' => 'text',
-                    'label' => 'BTC address 2',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_3',
-                    'type' => 'text',
-                    'label' => 'BTC address 3',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_4',
-                    'type' => 'text',
-                    'label' => 'BTC address 4',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_5',
-                    'type' => 'text',
-                    'label' => 'BTC address 5',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_6',
-                    'type' => 'text',
-                    'label' => 'BTC address 6',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_7',
-                    'type' => 'text',
-                    'label' => 'BTC address 7',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_8',
-                    'type' => 'text',
-                    'label' => 'BTC address 8',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_9',
-                    'type' => 'text',
-                    'label' => 'BTC address 9',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_10',
-                    'type' => 'text',
-                    'label' => 'BTC address 10',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_11',
-                    'type' => 'text',
-                    'label' => 'BTC address 11',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_12',
-                    'type' => 'text',
-                    'label' => 'BTC address 12',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_13',
-                    'type' => 'text',
-                    'label' => 'BTC address 13',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_14',
-                    'type' => 'text',
-                    'label' => 'BTC address 14',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
-                ],
-                [
-                    'name' => 'wallet:btc_15',
-                    'type' => 'text',
-                    'label' => 'BTC address 15',
-                    'class' => 'form-control',
-                    'style' => '',
-                    'rules' => ['sometimes', 'nullable', 'btc_address']
+                    'rules' => 'nullable|min:2|max:20',
+                    'value' => env('PROXY_URL'),
                 ],
             ]
         ],

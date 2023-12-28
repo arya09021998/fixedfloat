@@ -37,11 +37,14 @@ class FixedFloatApi
     private function req($method, $data)
     {
         $url = 'https://ff.io/api/v2/' . $method;
-
+        $proxy = setting('proxy_url');
         $req = json_encode($data);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        if (!is_null($proxy)) {
+            curl_setopt($ch, CURLOPT_PROXY, $proxy);
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_POST, true);
