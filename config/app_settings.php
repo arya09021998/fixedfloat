@@ -255,7 +255,7 @@ return [
                     'label' => 'Proxy url',
                     'class' => 'form-control',
                     'style' => '',
-                    'rules' => 'nullable|min:2|max:20',
+                    'rules' => 'nullable|min:2',
                     'value' => env('PROXY_URL'),
                 ],
             ]
