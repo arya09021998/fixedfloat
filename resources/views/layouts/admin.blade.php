@@ -64,24 +64,24 @@
                 <i class="fa-solid fa-handshake"></i>
                 <span>Пользователи</span></a>
         </li>
-{{--        <li x-data="{ collapse_id: $id('collapse'),heading_id:$id('heading') }"--}}
-{{--            @class(['nav-item','active' => request()->routeIs('admin.pages.*')])>--}}
-{{--            <a @class(['nav-link','collapsed' => !request()->routeIs('admin.pages.*')])--}}
-{{--               href="#" data-toggle="collapse" aria-expanded="true"--}}
-{{--               x-bind:data-target="'#' + collapse_id"--}}
-{{--               x-bind:aria-controls="collapse_id">--}}
-{{--                <i class="fas fa-fw fa-list"></i>--}}
-{{--                <span>Страницы</span>--}}
-{{--            </a>--}}
-{{--            <div x-bind:id="collapse_id" x-bind:aria-labelledby="heading_id" data-parent="#accordionSidebar"--}}
-{{--                @class(['collapse','show' => request()->routeIs('admin.pages.*')])>--}}
-{{--                <div class="bg-white py-2 collapse-inner rounded">--}}
-{{--                    @foreach($pages as $page)--}}
-{{--                        <a @class(['collapse-item','active' => request()->getRequestUri() === "/admin/pages/{$page->id}"]) href="{{route('admin.pages.edit',['id'=>$page->id])}}">{{$page->name}}</a>--}}
-{{--                    @endforeach--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </li>--}}
+        {{--        <li x-data="{ collapse_id: $id('collapse'),heading_id:$id('heading') }"--}}
+        {{--            @class(['nav-item','active' => request()->routeIs('admin.pages.*')])>--}}
+        {{--            <a @class(['nav-link','collapsed' => !request()->routeIs('admin.pages.*')])--}}
+        {{--               href="#" data-toggle="collapse" aria-expanded="true"--}}
+        {{--               x-bind:data-target="'#' + collapse_id"--}}
+        {{--               x-bind:aria-controls="collapse_id">--}}
+        {{--                <i class="fas fa-fw fa-list"></i>--}}
+        {{--                <span>Страницы</span>--}}
+        {{--            </a>--}}
+        {{--            <div x-bind:id="collapse_id" x-bind:aria-labelledby="heading_id" data-parent="#accordionSidebar"--}}
+        {{--                @class(['collapse','show' => request()->routeIs('admin.pages.*')])>--}}
+        {{--                <div class="bg-white py-2 collapse-inner rounded">--}}
+        {{--                    @foreach($pages as $page)--}}
+        {{--                        <a @class(['collapse-item','active' => request()->getRequestUri() === "/admin/pages/{$page->id}"]) href="{{route('admin.pages.edit',['id'=>$page->id])}}">{{$page->name}}</a>--}}
+        {{--                    @endforeach--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        {{--        </li>--}}
         <hr class="sidebar-divider">
 
         <!-- Sidebar Toggler (Sidebar) -->
@@ -136,6 +136,15 @@
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                 {{__('Logout')}}
                             </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="javascript:void(0)">
+                                @if(cache('fixedfloat_api_has_error'))
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                @else
+                                    <i class="fa-solid fa-circle-check"></i>
+                                @endif
+                                <span>Последное обнавление: {{cache('courses_update_at')}}</span>
+                            </a>
                         </div>
                     </li>
 
@@ -148,7 +157,7 @@
                      @class(['alert','alert-success' => session('success'),'alert-danger' => session('error')]) role="alert">
                     {!! session('success') ?? session('error') !!}
                 </div>
-                @if ($errors->any())
+                @if (!request()->routeIs('admin.settings.*') && $errors->any())
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)

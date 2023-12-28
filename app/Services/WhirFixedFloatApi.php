@@ -6,16 +6,6 @@ use Exception;
 
 class WhirFixedFloatApi
 {
-    private $key = '';
-    private $secret = '';
-
-    public function __construct($key, $secret)
-    {
-        $this->key = $key;
-        $this->secret = $secret;
-    }
-
-
     /**
      * @throws Exception
      */
@@ -36,9 +26,7 @@ class WhirFixedFloatApi
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type:application/json',
-            'FIXEDFLOAT_API_KEY: ' . $this->key,
-            'FIXEDFLOAT_API_SECRET: ' . $this->secret
+            'Content-Type:application/json'
         ]);
         $response = curl_exec($ch);
         curl_close($ch);

@@ -31,6 +31,24 @@ return [
                     'true_value' => 1,
                     'false_value' => 0,
                 ],
+                [
+                    'type' => 'select',
+                    'name' => 'courses_from_api',
+                    'label' => 'Апи для курсов',
+                    'rules' => 'required|in:whsir,fixedfloat',
+                    'value' => 'whsir',
+                    'options' => [
+                        'whsir' => 'Whsir',
+                        'fixedfloat' => 'Fixedfloat'
+                    ]
+                ],
+                [
+                    'type' => 'number',
+                    'name' => 'update_courses_every_min',
+                    'label' => 'Обновлять курсы раз в ? минуту',
+                    'rules' => 'required|integer|min:0',
+                    'value' => '15',
+                ],
 //                [
 //                    'name' => 'min_amount_btc',
 //                    'type' => 'number',

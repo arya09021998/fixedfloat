@@ -14,6 +14,7 @@ use App\Services\IpWhoisApi;
 use App\Services\WhirFixedFloatApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -501,10 +502,21 @@ class AjaxController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 1);
             }
-            $api = new WhirFixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret'));
-            $response = $api->price($validator->validate());
+
+            $api = match (setting('courses_from_api')) {
+                'whsir' => new WhirFixedFloatApi(),
+                'fixedfloat' => new FixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret')),
+                default => throw new \Exception('Апи для курсов не выбрана ', 1),
+            };
+            $seconds = setting('update_courses_every_min') * 60;
+            $response = Cache::remember('courses', $seconds, function () use ($api, $validator) {
+                Cache::put('courses_update_at', now());
+                Cache::put('fixedfloat_api_has_error', false);
+                return $api->price($validator->validate());
+            });
             return response(['code' => FixedFloatApi::RESP_OK, 'data' => $response, 'msg' => 'OK']);
         } catch (Throwable $exception) {
+            Cache::put('fixedfloat_api_has_error', true);
             return response(['code' => $exception->getCode(), 'data' => null, 'msg' => $exception->getMessage()]);
         }
 
