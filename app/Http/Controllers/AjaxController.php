@@ -508,19 +508,14 @@ class AjaxController extends Controller
                 'fixedfloat' => new FixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret')),
                 default => throw new \Exception('Апи для курсов не выбрана ', 1),
             };
-            $seconds = setting('update_courses_every_min') * 60;
-            $response = Cache::remember('courses', $seconds, function () use ($api, $validator) {
-                Cache::put('courses_update_at', now());
-                Cache::put('fixedfloat_api_has_error', false);
-                return $api->price($validator->validate());
-            });
-            return response(['code' => FixedFloatApi::RESP_OK, 'data' => $response, 'msg' => 'OK']);
+            $validate = $validator->validate();
+            $courses = $api->price($validate);
+            Cache::put('courses_update_at', now());
+            Cache::put('fixedfloat_api_has_error', false);
+            return response(['code' => FixedFloatApi::RESP_OK, 'data' => $courses, 'msg' => 'OK']);
         } catch (Throwable $exception) {
             if ($exception->getCode() !== 1) {
                 Cache::put('fixedfloat_api_has_error', true);
-                if ($courses = Cache::get('courses')) {
-                    return response(['code' => FixedFloatApi::RESP_OK, 'data' => $courses, 'msg' => 'OK']);
-                }
             }
 
             return response(['code' => $exception->getCode(), 'data' => null, 'msg' => $exception->getMessage()]);
