@@ -516,7 +516,13 @@ class AjaxController extends Controller
             });
             return response(['code' => FixedFloatApi::RESP_OK, 'data' => $response, 'msg' => 'OK']);
         } catch (Throwable $exception) {
-            Cache::put('fixedfloat_api_has_error', true);
+            if ($exception->getCode() !== 1) {
+                Cache::put('fixedfloat_api_has_error', true);
+                if ($courses = Cache::get('courses')) {
+                    return response(['code' => FixedFloatApi::RESP_OK, 'data' => $courses, 'msg' => 'OK']);
+                }
+            }
+
             return response(['code' => $exception->getCode(), 'data' => null, 'msg' => $exception->getMessage()]);
         }
 
