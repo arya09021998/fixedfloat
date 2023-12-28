@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\FixedFloatApi;
 use App\Services\GeetestApi;
 use App\Services\IpWhoisApi;
+use App\Services\WhirFixedFloatApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -500,7 +501,7 @@ class AjaxController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 1);
             }
-            $api = new FixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret'));
+            $api = new WhirFixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret'));
             $response = $api->price($validator->validate());
             return response(['code' => FixedFloatApi::RESP_OK, 'data' => $response, 'msg' => 'OK']);
         } catch (Throwable $exception) {

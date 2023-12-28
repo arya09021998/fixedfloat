@@ -56,8 +56,9 @@ return [
     */
 
     'domain' => env('APP_DOMAIN', 'localhost'),
-    'url' => env('APP_URL', 'http://' . env('APP_DOMAIN')),
 
+    'url' => env('APP_URL', 'http://' . env('APP_DOMAIN')),
+    'whir_api_base_url' => env('WHIR_API_BASE_URL'),
     'asset_url' => env('ASSET_URL'),
 
     /*

@@ -12,11 +12,16 @@ class FixedFloatApi
 
     private $key = '';
     private $secret = '';
+    /**
+     * @var false|mixed
+     */
+    private bool $debug;
 
-    public function __construct($key, $secret)
+    public function __construct($key, $secret, $debug = false)
     {
         $this->key = $key;
         $this->secret = $secret;
+        $this->debug = $debug;
     }
 
     private function sign($data)
@@ -44,6 +49,10 @@ class FixedFloatApi
         curl_setopt($ch, CURLOPT_URL, $url);
         if (!is_null($proxy)) {
             curl_setopt($ch, CURLOPT_PROXY, $proxy);
+        }
+        if ($this->debug) {
+            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+            curl_setopt($ch, CURLOPT_STDERR, fopen(storage_path('logs/laravel.log'), 'w'));
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);

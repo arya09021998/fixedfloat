@@ -13,13 +13,6 @@ class PageController extends Controller
 
     public function __construct()
     {
-//        $xmlString = file_get_contents('https://ff.io/rates.xml');
-//        $xmlObject = simplexml_load_string($xmlString);
-//
-//        $json = json_encode($xmlObject);
-//        $phpArray = json_decode($json, true);
-//
-//        dd($phpArray['item']);
         $this->middleware(function (Request $request, $next) {
             $data = array_pad(explode('.', $request->route()->getName()), 2, null);
             $pageName = str_replace('-', '_', $data[count($data) - 1]);

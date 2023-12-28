@@ -84,7 +84,7 @@ return [
                     'class' => 'form-control',
                     'rules' => 'nullable',
                     'value' => env('FIXEDFLOAT_API_KEY'),
-                    'hint' => 'Ключ для я fixedfloat'
+                    'hint' => 'Ключ для fixedfloat'
                 ],
                 [
                     'name' => 'fixedfloat_api_secret',
@@ -93,7 +93,7 @@ return [
                     'class' => 'form-control',
                     'rules' => 'nullable',
                     'value' => env('FIXEDFLOAT_API_SECRET'),
-                    'hint' => 'Секретный ключ для я fixedfloat'
+                    'hint' => 'Секретный ключ для fixedfloat'
                 ],
                 [
                     'name' => 'geetest_id',

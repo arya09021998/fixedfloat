@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Coin;
 use App\Services\FixedFloatApi;
+use App\Services\WhirFixedFloatApi;
 use Illuminate\Database\Seeder;
 
 class CoinSeeder extends Seeder
@@ -15,8 +16,9 @@ class CoinSeeder extends Seeder
      */
     public function run()
     {
-        $api = new FixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret'));
-        foreach ($api->ccies() as $ccy) {
+        $api = new WhirFixedFloatApi(setting('fixedfloat_api_key'), setting('fixedfloat_api_secret'));
+        $ccies = $api->ccies()['ccies'] ?? [];
+        foreach ($ccies as $ccy) {
             Coin::firstOrCreate(['name' => $ccy['coin']]);
         }
     }
