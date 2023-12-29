@@ -13,7 +13,7 @@
     <meta property="og:image" content="{{asset('/assets/images/public/ogimage.jpg')}}">
     <meta property="og:site_name" content="{{setting('app_name',config('app.name'))}}">
     <meta name="title" content="{{setting('app_name',config('app.name'))}} | Instant automatic aggregator">
-    <meta property="og:title" content="{{setting('app_name',config('app.name'))}} | Instant cryptocurrency exchange">
+    <meta property="og:title" content="{{setting('app_name',config('app.name'))}} | Official Site FixetdFloat">
     <meta property="og:description"
           content="Instant automatic aggregator!">
     <link rel="shortcut icon" href="{{asset('/assets/images/favicon.png')}}">
